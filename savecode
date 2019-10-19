@@ -1,0 +1,64 @@
+class state{
+    constructor(startTimestamp, difference, suspended){
+        this.startTimestamp = startTimestamp;
+        this.difference = difference;
+        this.suspended = suspended;
+    }
+
+    staticready() {
+        return new state(null, 0, 0);
+    }
+}
+
+class stopwatch{
+    constructor(state){
+        this.state = state;
+    }
+
+    static ready(){
+        return new stopwatch(state.ready());
+    }
+    
+    setState(newstate){
+        this.state = { ...this.state, ...newState};
+        this.render();
+    }
+
+    tick() {
+        this.setState({
+            difference: new Date(new Date() - this.state.startTimestamp)
+        });
+        this.requestAnimationId = requestanimationFrame(this.tick);
+    }
+
+    handleclickstart() {
+        if (this.state.startTimestamp){
+            //prevent multi clicks on start
+            return;
+        }
+        this.setState({
+            startTimestamp:new Date() - this.state.suspended,
+            suspended:0
+        });
+        this.requestAnimationId = requestAnimationFrame(this.tick);
+    }
+
+    handleClickStop(){
+        cancelAnimationFrame(this.requestAnimationId);
+        this.setState({
+            startTimestamp: null,
+            suspended: this.state.difference
+        });
+    }
+
+    handleClickReset(){
+        cancelAnimationFrame(this.requestAnimationId);
+        this.senState(state.ready());
+    }
+
+    render() {
+        const {difference} = this.state;
+        const hundredths = difference ? Math.floor(difference.getmilliseconds() / 10) : 0).toString().padstart(2, "0");
+        
+    }
+}
